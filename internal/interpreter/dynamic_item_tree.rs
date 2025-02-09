@@ -2293,8 +2293,11 @@ impl<'a, 'id> InstanceRef<'a, 'id> {
                         #[cfg(not(target_arch = "wasm32"))]
                         return _b.create_window_adapter();
                         #[cfg(target_arch = "wasm32")]
+                        let el_proxy = _b.new_event_loop_proxy();
+                        #[cfg(target_arch = "wasm32")]
                         i_slint_backend_winit::create_gl_window_with_canvas_id(
                             extra_data.canvas_id.get().map_or("canvas", |s| s.as_str()),
+                            el_proxy,
                         )
                     })?;
 

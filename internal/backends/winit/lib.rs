@@ -89,12 +89,17 @@ pub(crate) mod wasm_input_helper;
 #[cfg(all(target_arch = "wasm32", feature = "renderer-femtovg"))]
 pub fn create_gl_window_with_canvas_id(
     canvas_id: &str,
+    _proxy: Option<winit::event_loop::EventLoopProxy<SlintUserEvent>>,
 ) -> Result<Rc<dyn WindowAdapter>, PlatformError> {
     let attrs = WinitWindowAdapter::window_attributes(canvas_id)?;
     let adapter = WinitWindowAdapter::new(
         renderer::femtovg::GlutinFemtoVGRenderer::new_suspended(),
         attrs,
         None,
+        #[cfg(enable_accesskit)]
+        _proxy.ok_or_else(|| {
+            PlatformError::Other("Event loop proxy required for accessibility".to_string())
+        })?
     )?;
     Ok(adapter)
 }
